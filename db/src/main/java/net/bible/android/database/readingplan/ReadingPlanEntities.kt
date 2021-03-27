@@ -18,10 +18,7 @@
 
 package net.bible.android.database.readingplan
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 import java.util.Date
 
 class ReadingPlanEntities {
@@ -31,7 +28,7 @@ class ReadingPlanEntities {
      * that has already been started */
     @Entity(tableName = "readingplan",
         indices = [Index(name = "index_readingplan_plan_code",value=["plan_code"], unique = true)])
-    data class ReadingPlan(
+    data class ReadingPlanOld(
         @ColumnInfo(name = "plan_code") val planCode: String,
         @ColumnInfo(name = "plan_start_date") var planStartDate: Date,
         @ColumnInfo(name = "plan_current_day", defaultValue = "1") var planCurrentDay: Int = 1,
@@ -41,10 +38,61 @@ class ReadingPlanEntities {
     @Entity(tableName = "readingplan_status",
         indices = [Index(name="code_day", value = ["plan_code", "plan_day"], unique = true)]
     )
-    data class ReadingPlanStatus(
+    data class ReadingPlanStatusOld(
         @ColumnInfo(name = "plan_code") val planCode: String,
         @ColumnInfo(name = "plan_day") val planDay: Int,
         @ColumnInfo(name = "reading_status") val readingStatus: String,
         @PrimaryKey(autoGenerate = true) @ColumnInfo(name="_id") val id: Int? = null
+    )
+
+    @Entity
+    data class ReadingPlan(
+        /** Previously called planCode */
+        @PrimaryKey
+        val fileName: String,
+        var name: String?,
+        var description: String?,
+        var numberOfDays: Int,
+        var versification: String,
+        var startDate: Date? = null,
+        var dayComplete: Int? = null,
+        /** This is so that reading plan status can store historical reading records and not only the
+         * current reading cycle. This is not a count of how many times the user has been through the plan,
+         * it is incremented every time the plan is reset */
+        var readIteration: Int? = null,
+        /** Keep track of file version, so that db info can be updated if file version is increased */
+        var version: Int = 0,
+    )
+
+    @Entity(
+        primaryKeys = [ "readingPlanFileName", "dayNumber" ],
+        indices = [ Index("readingDate") ],
+        foreignKeys =
+        [
+            ForeignKey(entity = ReadingPlan::class, parentColumns = [ "fileName" ], childColumns = [ "readingPlanFileName" ], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)
+        ]
+    )
+    data class ReadingPlanDay(
+        val readingPlanFileName: String,
+        val dayNumber: Int,
+        /** For date-based reading plan (e.g. Mar-7 or Dec-29) */
+        val readingDate: String?,
+        val scriptureToRead: String,
+    )
+
+    @Entity(
+        primaryKeys = [ "readingPlanFileName", "dayNumber", "readIteration" ],
+        foreignKeys =
+        [
+            ForeignKey(entity = ReadingPlan::class, parentColumns = [ "fileName" ], childColumns = [ "readingPlanFileName" ], onDelete = ForeignKey.CASCADE, onUpdate = ForeignKey.CASCADE)
+        ]
+    )
+    data class ReadingPlanHistory(
+        val readingPlanFileName: String,
+        val dayNumber: Int,
+        /** See note on [ReadingPlan.readIteration]*/
+        var readIteration: Int,
+        var dateCompleted: Date? = null,
+        var readStatus: String? = null,
     )
 }

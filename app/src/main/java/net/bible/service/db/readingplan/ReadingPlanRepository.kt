@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.bible.android.control.ApplicationScope
 import net.bible.android.database.readingplan.ReadingPlanDao
-import net.bible.android.database.readingplan.ReadingPlanEntities.ReadingPlan
-import net.bible.android.database.readingplan.ReadingPlanEntities.ReadingPlanStatus
+import net.bible.android.database.readingplan.ReadingPlanEntities.ReadingPlanOld
+import net.bible.android.database.readingplan.ReadingPlanEntities.ReadingPlanStatusOld
 import net.bible.service.common.CommonUtils
 import net.bible.service.db.DatabaseContainer
 import net.bible.service.readingplan.ReadingPlanInfoDto
@@ -57,14 +57,14 @@ class ReadingPlanRepository @Inject constructor() {
     @Synchronized
     fun setReadingStatus(planCode: String, dayNo: Int, status: String) = GlobalScope.launch {
         readingPlanDao.addPlanStatus(
-            ReadingPlanStatus(planCode, dayNo, status)
+            ReadingPlanStatusOld(planCode, dayNo, status)
         )
     }
 
     @Synchronized
     fun startPlan(planCode: String, date: Date = CommonUtils.truncatedDate) = GlobalScope.launch {
         var readPlan = readingPlanDao.getPlan(planCode)
-        readPlan = readPlan?.apply { planStartDate = date } ?: ReadingPlan(planCode, date)
+        readPlan = readPlan?.apply { planStartDate = date } ?: ReadingPlanOld(planCode, date)
 
         readingPlanDao.updatePlan(readPlan)
     }
@@ -83,7 +83,7 @@ class ReadingPlanRepository @Inject constructor() {
     fun setCurrentDay(planCode: String, dayNo: Int) = GlobalScope.launch {
         var readPlan = readingPlanDao.getPlan(planCode)
         readPlan = readPlan?.apply { planCurrentDay = dayNo } ?:
-            ReadingPlan(planCode, CommonUtils.truncatedDate, dayNo)
+            ReadingPlanOld(planCode, CommonUtils.truncatedDate, dayNo)
 
         readingPlanDao.updatePlan(readPlan)
     }

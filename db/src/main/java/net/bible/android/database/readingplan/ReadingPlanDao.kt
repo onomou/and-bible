@@ -22,8 +22,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import net.bible.android.database.readingplan.ReadingPlanEntities.ReadingPlan
-import net.bible.android.database.readingplan.ReadingPlanEntities.ReadingPlanStatus
+import net.bible.android.database.readingplan.ReadingPlanEntities.ReadingPlanOld
+import net.bible.android.database.readingplan.ReadingPlanEntities.ReadingPlanStatusOld
 
 /**
  * Dao for readingplan and readingplan_status tables
@@ -33,7 +33,7 @@ interface ReadingPlanDao {
 
     //region ReadingPlanStatus
     @Query("SELECT * FROM readingplan_status WHERE plan_code = :planCode AND plan_day = :planDay")
-    suspend fun getStatus(planCode: String, planDay: Int): ReadingPlanStatus?
+    suspend fun getStatus(planCode: String, planDay: Int): ReadingPlanStatusOld?
 
     @Query("DELETE FROM readingplan_status WHERE plan_code = :planCode AND plan_day < :planDay")
     suspend fun deleteStatusesBeforeDay(planCode: String, planDay: Int)
@@ -42,15 +42,15 @@ interface ReadingPlanDao {
     suspend fun deleteStatusesForPlan(planCode: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addPlanStatus(status: ReadingPlanStatus)
+    suspend fun addPlanStatus(status: ReadingPlanStatusOld)
     //endregion
 
     //region ReadingPlan
     @Query("SELECT * FROM readingplan WHERE plan_code = :planCode")
-    suspend fun getPlan(planCode: String): ReadingPlan?
+    suspend fun getPlan(planCode: String): ReadingPlanOld?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updatePlan(plan: ReadingPlan)
+    suspend fun updatePlan(plan: ReadingPlanOld)
 
     @Query("DELETE FROM readingplan WHERE plan_code = :planCode")
     suspend fun deletePlanInfo(planCode: String)

@@ -34,7 +34,6 @@ import net.bible.android.control.DaggerApplicationComponent
 import net.bible.android.control.event.ABEventBus
 import net.bible.android.control.event.ToastEvent
 import net.bible.android.control.report.BugReport
-import net.bible.android.view.activity.base.CurrentActivityHolder
 import net.bible.android.view.util.locale.LocaleHelper
 import net.bible.service.common.CommonUtils
 import net.bible.service.device.ProgressNotificationManager
@@ -47,6 +46,7 @@ import org.crosswire.jsword.book.install.InstallManager
 import org.crosswire.jsword.bridge.BookIndexer
 import org.crosswire.jsword.internationalisation.LocaleProvider
 import org.crosswire.jsword.internationalisation.LocaleProviderManager
+import java.io.File
 import java.util.Locale
 
 class MyLocaleProvider: LocaleProvider {
@@ -219,6 +219,31 @@ open class BibleApplication : Application() {
             }
             editor.putBoolean("night_mode_pref", prefValue).apply()
             editor.putString("night_mode_pref3", pref3value).apply()
+        }
+
+        if(prevInstalledVersion <= 509) {
+            // migrate user's reading plan files to internal storage
+            val dotProperties = ".properties"
+
+            val sdReadingPlanDir = File(SharedConstants.MANUAL_INSTALL_DIR, SharedConstants.READINGPLAN_DIR_NAME)
+            val sdPlans = sdReadingPlanDir.list()?.filter { p -> p.endsWith(dotProperties) }
+
+            val defaultInternalPlans = CommonUtils.resources.assets.list(SharedConstants.READINGPLAN_DIR_NAME)?.filter { p -> p.endsWith(dotProperties) }
+
+            for (file in (sdPlans ?: emptyList())) {
+//                val userReadingPlanFile = File(sdReadingPlanDir, file)
+//                val copyToFile = File(SharedConstants.MANUAL_READINGPLAN_DIR, file)
+//
+//                if (userReadingPlanFile.exists() && !defaultInternalPlans.contains(file)) {
+//                    Log.i(TAG, "Migrating plan $file to internal reading plan storage")
+//                    userReadingPlanFile.copyTo(copyToFile)
+//                } else {
+//                    Log.i(TAG, "Migrating plans but file $file was not migrated")
+//                }
+            }
+            for (file in (defaultInternalPlans ?: emptyList())) {
+
+            }
         }
 
         Log.d(TAG, "Finished all Upgrading")
