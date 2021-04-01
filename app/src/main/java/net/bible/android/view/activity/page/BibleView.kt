@@ -777,7 +777,7 @@ class BibleView(val mainBibleActivity: MainBibleActivity,
     }
 
     private fun getUpdateConfigCommand(initial: Boolean) = """
-            bibleView.emit('set_config', {config: ${displaySettings.toJson()}, nightMode: $nightMode, initial: $initial});
+            bibleView.emit('set_config', {config: ${displaySettings.toJson()}, appSettings: {nightMode: $nightMode}, initial: $initial});
             """.trimIndent()
 
     private fun updateConfig(initial: Boolean = false) {
@@ -1173,7 +1173,7 @@ class BibleView(val mainBibleActivity: MainBibleActivity,
             if(value == null) return "null"
             return if(value) "true" else "false"
         }
-        executeJavascriptOnUiThread("bibleView.emit('scroll_to_verse', '$jumpToId', {now: ${boolString(now)}, highlight: ${boolString(highlight)}, ordinalStart: ${toVerse.ordinal}, ordinalEnd: ${endVerse?.ordinal}, delta: $topOffset});")
+        executeJavascriptOnUiThread("bibleView.emit('scroll_to_verse', '$jumpToId', {now: ${boolString(now)}, highlight: ${boolString(highlight)}, ordinalStart: ${toVerse.ordinal}, ordinalEnd: ${endVerse?.ordinal}});")
     }
 
     private fun executeJavascriptOnUiThread(javascript: String) {
