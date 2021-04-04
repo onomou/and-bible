@@ -74,7 +74,8 @@ class GridChoosePassageBook : CustomTitlebarActivityBase(R.menu.choose_passage_b
                 val buttonInfo = ButtonInfo()
                 try {
                     buttonInfo.id = book.ordinal
-                    buttonInfo.name = getShortBookName(book, isShortBookNamesAvailable)
+                    buttonInfo.name = versification.getLongName(book)
+                    buttonInfo.shortName = getShortBookName(book, isShortBookNamesAvailable)
                     buttonInfo.textColor = getBookTextColor(book.ordinal)
                     buttonInfo.highlight = book == currentBibleBook
                 } catch (nsve: NoSuchVerseException) {

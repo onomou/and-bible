@@ -40,6 +40,7 @@ import net.bible.android.view.util.buttongrid.LayoutDesigner.RowColLayout
 class ButtonInfo (
     var id: Int = 0,
     var name: String? = null,
+    var shortName: String? = null,
     var textColor: Int = Color.WHITE,
     var highlight: Boolean = false,
 
@@ -100,7 +101,7 @@ class ButtonGrid constructor(context: Context, attrs: AttributeSet? = null, defS
                     // create a graphical Button View object to show on the screen and link it to the ButtonInfo object
                     val buttonInfo = buttonInfoList[buttonInfoIndex]
                     val button = Button(context)
-                    button.text = buttonInfo.name
+                    button.text = buttonInfo.shortName ?: buttonInfo.name
                     button.setBackgroundResource(R.drawable.buttongrid_button_background)
                     button.setTextColor(buttonInfo.textColor)
                     if (buttonInfo.highlight) {
